@@ -40,7 +40,12 @@ def Upload():
 @app.route('/Upload/file',methods=['GET','POST'])
 def UploadFile():
     file = request.files["file"]
-    return file.filename
+    try:
+        goal_path = os.path.join(path, file.filename)
+        file.save(goal_path)
+        return "Your file has been saved successfully"
+    except Exception as e:
+        return "there is a error in saving your file !" + "the error is" + e
 
 
 
