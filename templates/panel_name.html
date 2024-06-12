@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/sid.css">
+    <title>Title</title>
+</head>
+<body>
+<p>welcome {{name}} </p>
+{% if name=="admin" %}
+<p>پنل مدریت کاربران </p>
+{% else %}
+<ul>
+    {% for i in my_list %}
+        <li> {{i}} </li>
+    {% endfor %}
+</ul>
+{% endif %}
+</body>
+</html>
