@@ -53,8 +53,4 @@ def my_Name(name):
 
 
 if __name__ == "__main__":
-    app.run(
-        host="localhost",
-        debug=True,
-        port=1111,
-    )
+    app.run(host="localhost",debug=True,port=1111,)
