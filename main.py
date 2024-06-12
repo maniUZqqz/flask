@@ -9,6 +9,7 @@ path = os.path.join("uploads")
 os.makedirs(path, exist_ok=True)
 
 
+
 @app.route("/")
 def Home():
     return render_template('login.html')
