@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, send_file
 from flask import redirect, request , abort, make_response, session
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 import hashlib
 import os
 
@@ -33,7 +34,8 @@ def profile():
         if request.method == 'POST':
             password = request.form['password']
             email = request.form['email']
-
+            session.permanent = True
+            app.permanent_session_lifetime = datetime(day=1)
             response =make_response(render_template('profile.html', email=email, password=password))
             session["user_name"] = email
             session["user_password"] = password
@@ -41,7 +43,7 @@ def profile():
         else:
             password = request.args.get('password')
             email = request.args.get('email')
-
+            session.permanent = True
             response = make_response(render_template('profile.html', email=email, password=password))
             session["user_name"] = email
             session["user_password"] = password
@@ -88,12 +90,28 @@ def Choices(filename):
 
 
 
+
+@app.route("/API/")
+def api():
+    my_dictionary = {
+        "mylist":[
+            {"name":39,"stac":True,"QQZ":"بنیان گذار"},
+            {"name":77,"stac":False,"QQZ":"بنیان گذار"},
+            {"name":66,"stac":False,"QQZ":"بنیان گذار"},
+            {"name":34,"stac":True,"QQZ":"بنیان گذار"},
+            {"name":123,"stac":True,"QQZ":"بنیان گذار"},
+            {"name":32,"stac":False,"QQZ":"بنیان گذار"},
+            {"name":39,"stac":True,"QQZ":"بنیان گذار"},
+            {"name":98,"stac":False,"QQZ":"بنیان گذار"},
+            {"name":000,"stac":False,"QQZ":"بنیان گذار"}
+        ]
+    }
+    return my_dictionary
+
 @app.errorhandler(404)
 def error404(Error):
     # return f"I have error {Error}"
     return render_template("error404.html"), 404
-
-
 
 
 
