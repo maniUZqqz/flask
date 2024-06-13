@@ -1,9 +1,14 @@
 from flask import Flask, render_template, url_for, send_file
-from flask import redirect, request , abort
+from flask import redirect, request , abort, make_response, session
 from werkzeug.utils import secure_filename
+from flask_sqlalchemy import SQLAlchemy
 import hashlib
 import os
+
+
 app = Flask(__name__)
+app.secret_key = "QQZ_UZ"
+
 
 path = os.path.join("uploads")
 os.makedirs(path, exist_ok=True)
@@ -16,7 +21,33 @@ def Home():
     return redirect(url_for("login")) # واسه ی تابع اش
 @app.route("/Login/")
 def login():
-    return render_template('login.html')
+    if session.get("user_name"):
+        return render_template("profile.html")
+    else:
+        return render_template('login.html')
+
+
+@app.route('/profile.html/',methods=['GET','POST'])
+def profile():
+    try:
+        if request.method == 'POST':
+            password = request.form['password']
+            email = request.form['email']
+
+            response =make_response(render_template('profile.html', email=email, password=password))
+            session["user_name"] = email
+            session["user_password"] = password
+            return response
+        else:
+            password = request.args.get('password')
+            email = request.args.get('email')
+
+            response = make_response(render_template('profile.html', email=email, password=password))
+            session["user_name"] = email
+            session["user_password"] = password
+            return response
+    except Exception as e:
+        return "Error: " + str(e)
 
 @app.route('/profile.html/<name>/')
 def my_name(name):
@@ -25,17 +56,6 @@ def my_name(name):
         return render_template('panel_name.html',name=name,my_list=my_list)
     else:
         return render_template('panel_name.html',name=name,my_list=my_list)
-
-@app.route('/profile.html/',methods=['GET','POST'])
-def profile():
-    if request.method == 'POST':
-        password = request.form['password']
-        email = request.form['email']
-        return render_template('profile.html', email=email, password=password)
-    else:
-        password = request.args.get('password')
-        email = request.args.get('email')
-        return render_template('profile.html', email=email, password=password)
 
 
 @app.route('/Download/')
