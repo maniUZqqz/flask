@@ -1,7 +1,8 @@
-from flask import Flask, render_template, url_for, send_file
+from flask import Flask, render_template, url_for, send_file, jsonify
 from flask import redirect, request, abort, make_response, session
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 import hashlib
 import os
@@ -16,17 +17,17 @@ QQz_route = os.path.join(file_dir, "app.db")  # درست کردن فایل
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + QQz_route  # تنظیمات درست کردن کلید دیتابیس
 db = SQLAlchemy(app)  # متغییر ی که اپ رو تو دیتابیس جا کردیم
 
-db.init_app(app)
-while app.app_context():
-    if not os.path.exists("app.db"):
+
+
+if not os.path.exists("app.db"):
+    with app.app_context():
         db.create_all()
 
 
-# if not os.path.exists("uploads"):
-#     os.makedirs("uploads")
 path = os.path.join("uploads")
 os.makedirs(path, exist_ok=True)  # به راه کردن پوشه اپلود
-
+# if not os.path.exists("uploads"):
+#     os.makedirs("uploads")
 
 class User(db.Model):
     id = db.Column(
