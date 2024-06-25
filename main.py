@@ -41,8 +41,8 @@ class User(db.Model):
         db.String(80),  # هشتاد تا پیشتر نشه
         nullable=True,  # # می تونه خالی null باشه
     )
-    def __repr__(self):
-        return self.name
+    # def __repr__(self):
+    #     return self.name
 
 
 @app.route("/")
