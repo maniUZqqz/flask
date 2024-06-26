@@ -31,6 +31,8 @@ def upload_plugin():
 
 upload_plugin()
 
+
+
 class User(db.Model):
     id = db.Column(
         db.Integer,  # عدد باشه
@@ -40,9 +42,47 @@ class User(db.Model):
     name = db.Column(
         db.String(80),  # هشتاد تا پیشتر نشه
         nullable=True,  # # می تونه خالی null باشه
-    )
-    # def __repr__(self):
+    )# def __repr__(self):
     #     return self.name
+
+class Writer(db.Model):
+    id = db.Column(
+        db.Integer,  # عدد باشه
+        primary_key=True,  # کیلد اصلی ستون به صورت یک پارچه اس
+        unique=True,  # این اسم یکتا است یعنی نمی توان دو کاربر با یک اسم قبول کرد
+    )
+    name = db.Column(
+        db.String(80),  # هشتاد تا پیشتر نشه
+        nullable=False,  # # می تونه خالی null باشه
+    )
+class Book(db.Model):
+        id = db.Column(
+            db.Integer,  # عدد باشه
+            primary_key=True,  # کیلد اصلی ستون به صورت یک پارچه اس
+            unique=True,  # این اسم یکتا است یعنی نمی توان دو کاربر با یک اسم قبول کرد
+        )
+        name = db.Column(
+            db.String(80),  # هشتاد تا پیشتر نشه
+            nullable=False,  # # می تونه خالی null باشه
+        )
+        writer_id = db.Column(
+            db.Integer,
+            db.ForeignKey("writer.id"),    # کلیذ خارجی که تایین میکنه کتاب برای کدام نویسنده باشه
+        )
+        writer =db.relationship("Writer", backref=db.backref("books"), )           # ارث بری از کلاس نویسندگان
+
+
+
+
+
+
+
+
+# if not os.path.exists("app.db"):
+#     with app.app_context():
+#         db.create_all()
+
+
 
 
 @app.route("/")
@@ -146,6 +186,7 @@ def api():  # واسه  اتصاد دو زبان برنامه نویسی یا ه
 @app.route('/add/')
 def add_user():
     users = User.query.all()
+    # users = User.query.filter(User.name.like('%ma%')).all()
     return render_template("add_in_database.html", users=users)
 
 
@@ -159,15 +200,37 @@ def after_add_user():                  # اپ روتی که یوزر اضافه 
     except Exception as e:
         return "Error: " + str(e)
 
-@app.route("/update")
+@app.route("/update/")
 def updateUser():
     try:
         goal_user = User.query.filter_by(name="Mohammad").first()
+        # goal_user.name = "m"
         db.session.delete(goal_user)
         db.session.commit()
         return "Update User Successfully" + "<a href='/'>Home</a>"
     except Exception as ex:
         return "Update User Failed =>" + ex
+
+
+@app.route("/addBook/")
+def updateUser():
+    try:
+        writer = Writer(name="Elham")
+        book = Book(name="The Book", writer=writer)
+
+        writer.books.append(book)
+
+        db.session.add(book)
+        db.session.commit()
+        return "Adding Book Successfully => " + "<a href='/books'> All books <a>"
+    except Exception as ex:
+        return "Adding Book Failed ==>>" + "<br>" + str(ex)
+
+
+@app.route("/books/")
+def show_books(books=None):
+    books = books.query.all()
+    return render_template("show_books.html",books=books)
 
 @app.errorhandler(404)
 def error404(Error):  # واسه هندل کردن ارور
