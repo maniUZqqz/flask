@@ -12,13 +12,14 @@ phpMyAdmin_with_python = "https://www.aparat.com/v/0ZDtK"
 app = Flask(__name__)
 app.secret_key = "QQZ_UZ"  # کلید سکشن
 
-file_dir = os.path.dirname(__file__)  # مسیر فایل
-QQz_route = os.path.join(file_dir, "app.db")  # درست کردن فایل
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + QQz_route  # تنظیمات درست کردن کلید دیتابیس
-db = SQLAlchemy(app)  # متغییر ی که اپ رو تو دیتابیس جا کردیم
-if not os.path.exists("app.db"):
-    with app.app_context():
-        db.create_all()
+db_path = os.path.join(os.path.dirname(__file__), 'app.db')
+
+# تنظیمات دیتابیس برای برنامه Flask
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(db_path)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# ایجاد یک شیء از کلاس SQLAlchemy
+db = SQLAlchemy(app)
 
 
 def upload_plugin():
@@ -78,9 +79,9 @@ class Book(db.Model):
 
 
 
-# if not os.path.exists("app.db"):
-#     with app.app_context():
-#         db.create_all()
+
+with app.app_context():
+    db.create_all()
 
 
 
@@ -212,14 +213,12 @@ def updateUser():
         return "Update User Failed =>" + ex
 
 
-@app.route("/addBook/")
-def updateUser():
+@app.route("/addbook/")
+def add_book():
     try:
         writer = Writer(name="Elham")
         book = Book(name="The Book", writer=writer)
-
         writer.books.append(book)
-
         db.session.add(book)
         db.session.commit()
         return "Adding Book Successfully => " + "<a href='/books'> All books <a>"
